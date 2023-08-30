@@ -1,6 +1,8 @@
 # Flask Mobile Factory API
 
-Welcome to the Flask Mobile Factory API project! This API allows you to create orders for configurable mobiles.
+Welcome to the Flask Mobile Factory API project! This API allows you to create orders for configurable mobiles. The code for this project can be found in the following repository.
+
+https://github.com/Ritesh7766/MobileFactory
 
 ## Setting Up and Running the Application
 
