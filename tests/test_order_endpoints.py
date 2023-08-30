@@ -33,22 +33,18 @@ class TestOrderEndpoint(unittest.TestCase):
         self.assertEqual(total, data["total"])
 
 
-    def check_invalid_codes(self, data):
-        for code in data['Invalid Codes']:
-            self.assertNotIn(code, PARTS)
-
-
     def check_missing_components(self, parts, data):
+        # The component code is guranteed to be present in the PARTS dictionary.
         specified_component_types = set([PARTS[code]['type'] for code in parts])
         missing_components = {'Screen', 'Camera', 'OS', 'Port', 'Body'} - specified_component_types
         self.assertEqual(missing_components, set(data['Missing Components']))
 
     
     def check_repeated_components(self, parts, data):
+        # The component code is guranteed to be present in the PARTS dictionary.
         specified_component_types, repeated_component_types = set(), set()
         for code in parts:
             part = PARTS[code]
-
             if part['type'] in specified_component_types:
                 repeated_component_types.add(part["type"])
             specified_component_types.add(part['type'])
@@ -83,7 +79,17 @@ class TestOrderEndpoint(unittest.TestCase):
 
                 if 'Repeated Component Types' in data:
                     self.check_repeated_components(parts=parts, data=data)
-                
+        
+
+
+    def test_invalid_codes(self):
+        response = self.app.post("/order", json={ "components": ["I","A","D","X","Z"] })
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("Z", data["Invalid Codes"])
+        self.assertIn("X", data["Invalid Codes"])
+
 
 if __name__ == "__main__":
     unittest.main()
