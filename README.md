@@ -54,6 +54,12 @@ Welcome to the Flask Mobile Factory API project! This API allows you to create o
 
 3. To stop the application, press `Ctrl+C` in the terminal.
 
+### Testing the Application
+
+1. In the project directory, run the following command to test the Flask application:
+
+&emsp;&emsp;python3 -m unittest discover
+
 ## API Usage
 
 Once the application is running, you can use the following API endpoint to create orders for configurable mobiles.
