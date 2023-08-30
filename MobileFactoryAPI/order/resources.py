@@ -23,7 +23,7 @@ class Order(Resource):
     # To generate a unique order ID, we can use a combination of a timestamp and a random number.
     def generate_order_id(self):
         timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-        random_number = str(uuid.uuid4().int)[:6]
+        random_number = str(uuid.uuid4().int)[:10]
         order_id = f"{timestamp}_{random_number}"
         return order_id
 
@@ -47,7 +47,7 @@ class Order(Resource):
 
         # Construct the response
         for code in sorted(components):    
-            # Check if parts exist in the dictionary.
+            # Check if part exist in the dictionary.
             if code not in PARTS:
                 return {'Error': f'Part with code {code} not found'}, 404
             part = PARTS[code]
