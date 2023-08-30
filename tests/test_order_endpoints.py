@@ -81,7 +81,6 @@ class TestOrderEndpoint(unittest.TestCase):
                     self.check_repeated_components(parts=parts, data=data)
         
 
-
     def test_invalid_codes(self):
         response = self.app.post("/order", json={ "components": ["I","A","D","X","Z"] })
         data = json.loads(response.data)

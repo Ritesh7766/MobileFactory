@@ -23,26 +23,26 @@ class Order(Resource):
     def validate_post_request(self, components):
         errors = {}
 
-        # Check list size before hand to avoid iterating through a large list.
+        # Pre-check the size of the list to avoid iterating through a lengthy collection beforehand.
         if len(components) > 5:
             errors['Invalid Request'] = 'You only need to specify 5 components'
             return errors
 
         specified_component_types, invalid_codes, repeated_component_types = set(), set(), set()
         for code in components:
-            # Check if part exist in the dictionary.
+            # Validate code.
             if code not in PARTS:
                 invalid_codes.add(code)
                 continue
 
             part = PARTS[code]
 
-            # Check if same component type has been specified multiple times.
+            # Confirm whether the same component type has been provided more than once.
             if part['type'] in specified_component_types:
                 repeated_component_types.add(part["type"])
             specified_component_types.add(part['type'])
         
-        # Check for missing parts
+        # Check for missing components
         missing_components = {'Screen', 'Camera', 'OS', 'Port', 'Body'} - specified_component_types
         if missing_components:
             errors['Missing Components'] = list(missing_components)
@@ -73,7 +73,7 @@ class Order(Resource):
         if errors:
             return errors, 400
 
-        # Define the response
+        # Initialize the response dict
         response = {
             'order_id': self.generate_order_id(),
             'total': 0.0,
