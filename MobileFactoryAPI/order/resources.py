@@ -34,24 +34,33 @@ class Order(Resource):
 
         components = args['components']
 
-        # Validate parts list. This will allow us to avoid iterating through a massive components list.
-        if len(components) > len(PARTS) or len(components) == 0:
-            return {'Error': 'Invalid request'}, 400
-
         # Define the response
         response = {
             'order_id': self.generate_order_id(),
             'total': 0.0,
             'parts': []
         }
-
+ 
         # Construct the response
+        component_types = set()
         for code in sorted(components):    
             # Check if part exist in the dictionary.
             if code not in PARTS:
-                return {'Error': f'Part with code {code} not found'}, 404
+                return {'Error': f'Part with code {code} does not exists'}, 404
+
             part = PARTS[code]
+
+            # Check if same component type has been specified multiple times.
+            if part['type'] in component_types:
+                return {'Error': f'{part["type"]} type specified multiple times'}, 400
+            component_types.add(part['type'])
+
             response['total'] += part['price']
             response['parts'].append(part['part'])
-        
+
+        # Check for missing parts
+        missing_components = {'Screen', 'Camera', 'OS', 'Port', 'Body'} - component_types
+        if missing_components:
+            return {'Missing Components': list(missing_components)}, 400
+
         return response, 201
