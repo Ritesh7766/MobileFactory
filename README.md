@@ -60,7 +60,7 @@ https://github.com/Ritesh7766/MobileFactory
 
 1. In the project directory, run the following command to test the Flask application:
 
-&emsp;&emsp;python3 -m unittest discover
+&emsp;&emsp;python -m unittest discover
 
 ## API Usage
 
