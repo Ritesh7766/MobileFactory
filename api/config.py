@@ -1,3 +1,7 @@
+"""
+    Define configurations for development, testing and production.
+"""
+
 class Development:
     DEBUG = True
 
