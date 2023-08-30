@@ -1,4 +1,4 @@
-parts = {
+PARTS = {
     'A': {
         'price': 10.28,
         'part': 'LED Screen'
