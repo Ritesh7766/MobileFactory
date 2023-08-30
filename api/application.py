@@ -5,7 +5,7 @@ from flask import Flask
 from api import config
 
 
-def create_app(environment):
+def create_app(environment='development'):
     """
         Creates a new Flask application and initialize application.
     """
