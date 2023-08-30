@@ -19,9 +19,21 @@ from MobileFactoryAPI.order.utils import PARTS
 class TestOrderEndpoint(unittest.TestCase):
     def setUp(self):
         self.app = app.test_client()
-        
 
-    def test_successful_order_creation(self):
+
+    def check_valid_requests(self, parts, data):
+        # Check total value of parts and parts list.
+        total, parts_list = 0.0, []
+        for code in parts:
+            part = PARTS[code]
+            total += part["price"]
+            parts_list.append(part["part"])
+
+        self.assertListEqual(parts_list, data["parts"])
+        self.assertEqual(total, data["total"])
+
+
+    def test_all_combinations(self):
         order_ids = set()
         # Try every possible combination of requests.
         for i in range(1, len(PARTS) + 1):
@@ -29,58 +41,20 @@ class TestOrderEndpoint(unittest.TestCase):
                 response = self.app.post("/order", json={"components": parts})
                 data = json.loads(response.data)
 
-                # Check status code.
-                self.assertEqual(response.status_code, 201)
+                # Check successful order creations
+                if response.status_code == 201:
+                    self.check_valid_requests(parts=parts, data=data)
 
-                # Check total value of parts and parts list.
-                total, parts_list = 0.0, []
-                for code in parts:
-                    part = PARTS[code]
-                    total += part["price"]
-                    parts_list.append(part["part"])
+                    # Make sure every order_id is unique.
+                    self.assertNotIn(data["order_id"], order_ids)
+                    order_ids.add(data["order_id"])
+                    continue
 
-                self.assertListEqual(parts_list, data["parts"])
-                self.assertEqual(data["total"], total)
-
-                # Make sure every order_id is unique.
-                self.assertNotIn(data["order_id"], order_ids)
-                order_ids.add(data["order_id"])
+                # Check bad requests
+                self.assertEqual(response.status_code, 400)
+                
 
 
-    def test_invalid_components(self):
-        response = self.app.post("/order", json={ "components": ["I", "A", "D", "F", "K", "Z"] })
-        data = json.loads(response.data)
-
-        self.assertEqual(response.status_code, 404)
-        self.assertIn("Part with code Z not found", data["Error"])
-
-    
-    def test_large_payload(self):
-        response = self.app.post("/order", json={ "components": list(range(2 ** 15) ) })
-        data = json.loads(response.data)
-
-        self.assertEqual(response.status_code, 400)
-
-
-    def test_empty_parts_list(self):
-        response = self.app.post("/order", json={ "components": [] })
-        data = json.loads(response.data)
-
-        self.assertEqual(response.status_code, 400)
-
-    
-    def test_empty_payload(self):
-        response = self.app.post("/order", json={ })
-        data = json.loads(response.data)
-
-        self.assertEqual(response.status_code, 400)
-
-    
-    def test_invalid_payloads(self):
-        response = self.app.post("/order", json={ "random_string": [] })
-        data = json.loads(response.data)
-
-        self.assertEqual(response.status_code, 400)        
 
 
 

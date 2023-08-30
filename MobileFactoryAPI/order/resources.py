@@ -11,8 +11,6 @@ import uuid
 # datetime
 from datetime import datetime
 
-# defaulidict
-from collections import defaultdict
 
 # Endpoint for creating an order
 class Order(Resource):
@@ -23,31 +21,37 @@ class Order(Resource):
 
 
     def validate_post_request(self, components):
-        errors = defaultdict(list)
+        errors = {}
 
         # Check list size before hand to avoid iterating through a large list.
         if len(components) > 5:
-            errors['Invalid Request'].append('You only need to specify 5 components')
+            errors['Invalid Request'] = 'You only need to specify 5 components'
             return errors
 
-        component_types = set()
+        specified_component_types, invalid_codes, repeated_component_types = set(), set(), set()
         for code in components:
             # Check if part exist in the dictionary.
             if code not in PARTS:
-                errors['Invalid Codes'].append(f'Part with code {code} does not exists')
+                invalid_codes.add(code)
                 continue
-            
+
             part = PARTS[code]
 
             # Check if same component type has been specified multiple times.
-            if part['type'] in component_types:
-                errors['Same Component Types'].append(f'{part["type"]} type specified multiple times')
-            component_types.add(part['type'])
+            if part['type'] in specified_component_types:
+                repeated_component_types.add(part["type"])
+            specified_component_types.add(part['type'])
         
         # Check for missing parts
-        missing_components = {'Screen', 'Camera', 'OS', 'Port', 'Body'} - component_types
+        missing_components = {'Screen', 'Camera', 'OS', 'Port', 'Body'} - specified_component_types
         if missing_components:
             errors['Missing Components'] = list(missing_components)
+
+        if invalid_codes:
+            errors['Invalid Codes'] = list(invalid_codes)
+        
+        if repeated_component_types:
+            errors['Repeated Component Types'] = list(repeated_component_types)
 
         return errors
 
@@ -77,7 +81,6 @@ class Order(Resource):
         }
  
         # Construct the response
-        component_types = set()
         for code in sorted(components):    
             part = PARTS[code]
             response['total'] += part['price']
