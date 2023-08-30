@@ -11,9 +11,9 @@ def create_app(environment):
     """
 
     config_map = {
-        'development': config.Development(),
-        'testing': config.Testing(),
-        'production': config.Production(),
+        'development': config.Development,
+        'testing': config.Testing,
+        'production': config.Production,
     }
 
     config_obj = config_map[environment.lower()]
