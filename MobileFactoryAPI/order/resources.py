@@ -48,9 +48,8 @@ class Order(Resource):
         # Construct the response
         for code in sorted(components):    
             # Check if parts exist in the dictionary.
-            for code in components:
-                if code not in PARTS:
-                    return {'Error': f'Part with code {code} not found'}, 404
+            if code not in PARTS:
+                return {'Error': f'Part with code {code} not found'}, 404
             part = PARTS[code]
             response['total'] += part['price']
             response['parts'].append(part['part'])
