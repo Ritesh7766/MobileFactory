@@ -35,7 +35,7 @@ class Order(Resource):
         components = args['components']
 
         # Validate parts list. This will allow us to avoid iterating through a massive components list.
-        if len(components) > len(PARTS):
+        if len(components) > len(PARTS) or len(components) == 0:
             return {'Error': 'Invalid request'}, 400
 
         # Define the response

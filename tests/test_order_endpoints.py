@@ -61,7 +61,28 @@ class TestOrderEndpoint(unittest.TestCase):
 
         self.assertEqual(response.status_code, 400)
 
-        
+
+    def test_empty_parts_list(self):
+        response = self.app.post("/order", json={ "components": [] })
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 400)
+
+    
+    def test_empty_payload(self):
+        response = self.app.post("/order", json={ })
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 400)
+
+    
+    def test_invalid_payloads(self):
+        response = self.app.post("/order", json={ "random_string": [] })
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 400)        
+
+
 
 if __name__ == "__main__":
     unittest.main()
